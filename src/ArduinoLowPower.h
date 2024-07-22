@@ -89,6 +89,14 @@ class ArduinoLowPowerClass {
 		void detachAdcInterrupt();
 		#endif
 
+		#ifdef ARDUINO_SILABS
+		ArduinoLowPowerClass();
+		void deepSleepMemoryWrite(uint32_t address, uint32_t data);
+		uint32_t deepSleepMemoryRead(uint32_t address);
+		uint32_t deepSleepMemorySize() { return deep_sleep_memory_size; }
+		bool wokeUpFromDeepSleep();
+		#endif
+
 	private:
 		void setAlarmIn(uint32_t millis);
 		#ifdef ARDUINO_ARCH_SAMD
@@ -98,6 +106,16 @@ class ArduinoLowPowerClass {
 		#endif
 		#ifdef BOARD_HAS_COMPANION_CHIP
 		void (*companionSleepCB)(bool);
+		#endif
+
+		#ifdef ARDUINO_SILABS
+		static const uint32_t deep_sleep_memory_size = 32u;
+		voidFuncPtr wakeup_callback;
+		uint32_t wakeup_pin;
+		irq_mode wakeup_mode;
+		void handleWakeup();
+		void timedSleep(uint32_t millis_to_sleep);
+		void setupDeepSleepWakeUpPin();
 		#endif
 };
 
